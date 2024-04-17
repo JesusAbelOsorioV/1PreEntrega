@@ -3,22 +3,26 @@ import ProductManager from '../ProductManager.js';
 const router = Router();
 import { json } from 'express';
 
-const productManager = new ProductManager('./Products.json');
-const products = await productManager.getProducts();
+const productjson = '../Products.json'
+const productManager = new ProductManager(productjson);
 const PStatus = true
 
 router.use(json());
 
-router.get('/products', async (req, res) =>{
+router.get('/products', async (req, res) => {
+    const product = productManager.getProducts()
     const limit = parseInt(req.query.limit);
-    const product = await productManager.getProducts();
-
+    
+    try{
     if(!isNaN(limit) && limit > 0){
         const limitedProducts = product.slice(0, limit);
         res.status(200).json(limitedProducts);
     }else{
         res.status(200).json(product);
-        console.log('productos',product);
+        // console.log('productos',product);
+    }
+    } catch(error){
+        res.status(404).send({ error: `${error}`})
     }
 });
 
@@ -58,8 +62,22 @@ router.post('/products', async (req, res) =>{
     res.status(201).send(newProduct);
 });
 
-router.put('/:pid',(res , req) =>{
-    
+router.put('/products/:pid', async (res , req) =>{
+    const pid = req.params;
+    const updateP = req.body;
+
+    if(!pid || !updateP){
+        return res.status(400).json({error: "no se pudo actualizar"})
+    }else{
+        productManager.updateProducts(pid, updateP);
+        res.json(`El producto con el id:${pid} se ha actualizado`)
+    }
+});
+
+router.delete('/products/:pid', async (res, rep) => {
+    const pid = rep.params;
+    const delateP = await productManager.deleteProduct(pid);
+    res.json(delateP);
 });
 
 

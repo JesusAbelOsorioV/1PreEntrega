@@ -47,7 +47,7 @@ class ProductManager {
     }
     // obtener productos por Id y verificar que existe y no se repita
     async getProductsById(id) {
-        const products = await getJson(this.path)
+        const products = await this.getJson(this.path)
         const product = products.find((p) => p.id === parseInt(id));
         if (!product) {
             return product;
@@ -55,7 +55,7 @@ class ProductManager {
         return product;
     }
     async updateProducts(id, updateProducts){
-        const products = await getJson(this.path)
+        const products = await this.getJson(this.path)
         const updateP = products.findIndex( product => product.id === id);
         if (updateP !== -1){
             products[updateP] = { ...products[updateP], ...updateProducts };
@@ -66,7 +66,7 @@ class ProductManager {
     console.log(`Product con id: ${id} no encontrado`);
 }
     async deleteProduct(id){
-        const products = await getJson(this.path)
+        const products = await this.getJson(this.path)
         const product = products.findIndex( product => product.id === id);
         if (product !== -1){
             products.splice(product, 1);
